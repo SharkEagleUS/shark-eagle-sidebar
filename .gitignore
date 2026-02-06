@@ -1,0 +1,8 @@
+node_modules/
+.output/
+.wxt/
+*.log
+.idea
+.DS_Store
+.env
+coverage/

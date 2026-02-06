@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { createRoot } from 'react-dom/client';
-import { Bookmark, SidebarData, SidebarSettings, defaultData } from '../utils/types';
-import { loadData, saveData, exportData, importData, generateId } from '../utils/storage';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {createRoot} from 'react-dom/client';
+import {Bookmark, defaultData, SidebarData, SidebarSettings} from '../utils/types';
+import {exportData, generateId, importData, loadData, saveData} from '../utils/storage';
 
 const Sidebar: React.FC = () => {
   const [data, setData] = useState<SidebarData>(defaultData);
   const [isVisible, setIsVisible] = useState(false);
-  const [isPinned, setIsPinned] = useState(true);
+  const [isPinned, setIsPinned] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newBookmark, setNewBookmark] = useState({ title: '', url: '' });
+  const [newBookmark, setNewBookmark] = useState({title: '', url: ''});
   const sidebarRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
@@ -24,19 +24,19 @@ const Sidebar: React.FC = () => {
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isPinned || !data.settings.autoHide) return;
-      
+
       const triggerWidth = data.settings.triggerWidth;
       const sidebarWidth = 60;
       const isLeft = data.settings.position === 'left';
-      
-      const isOverSidebar = isLeft 
-        ? e.clientX <= sidebarWidth 
+
+      const isOverSidebar = isLeft
+        ? e.clientX <= sidebarWidth
         : e.clientX >= window.innerWidth - sidebarWidth;
-      
-      const isNearEdge = isLeft 
-        ? e.clientX <= triggerWidth 
+
+      const isNearEdge = isLeft
+        ? e.clientX <= triggerWidth
         : e.clientX >= window.innerWidth - triggerWidth;
-      
+
       if (isOverSidebar || isNearEdge) {
         if (hideTimeoutRef.current) {
           clearTimeout(hideTimeoutRef.current);
@@ -69,7 +69,7 @@ const Sidebar: React.FC = () => {
 
   const addBookmark = async () => {
     if (!newBookmark.title || !newBookmark.url) return;
-    
+
     const bookmark: Bookmark = {
       id: generateId(),
       title: newBookmark.title,
@@ -77,12 +77,12 @@ const Sidebar: React.FC = () => {
       favicon: `https://www.google.com/s2/favicons?domain=${newBookmark.url}&sz=32`,
       createdAt: Date.now(),
     };
-    
+
     await updateData({
       ...data,
       bookmarks: [...data.bookmarks, bookmark],
     });
-    setNewBookmark({ title: '', url: '' });
+    setNewBookmark({title: '', url: ''});
     setShowAddModal(false);
   };
 
@@ -96,7 +96,7 @@ const Sidebar: React.FC = () => {
   const updateSettings = async (settings: Partial<SidebarSettings>) => {
     await updateData({
       ...data,
-      settings: { ...data.settings, ...settings },
+      settings: {...data.settings, ...settings},
     });
   };
 
@@ -135,7 +135,16 @@ const Sidebar: React.FC = () => {
   return (
     <>
       <div ref={sidebarRef} style={sidebarStyle}>
-        <div style={{ marginBottom: '16px', borderBottom: '1px solid #333', paddingBottom: '10px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+        <div style={{
+          marginBottom: '16px',
+          borderBottom: '1px solid #333',
+          paddingBottom: '10px',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '6px'
+        }}>
           <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
             <circle cx="50" cy="50" r="45" fill="#1a1a2e"/>
             <path d="M30 60 Q50 30 70 60 Q50 45 30 60" fill="#4a9eff"/>
@@ -143,15 +152,15 @@ const Sidebar: React.FC = () => {
             <circle cx="42" cy="48" r="3" fill="#fff"/>
             <circle cx="58" cy="48" r="3" fill="#fff"/>
           </svg>
-          
-          <button 
-            onClick={() => setIsPinned(!isPinned)} 
-            style={{ 
-              background: isPinned ? '#4a9eff' : '#333', 
-              border: 'none', 
-              borderRadius: '4px', 
-              padding: '6px', 
-              cursor: 'pointer', 
+
+          <button
+            onClick={() => setIsPinned(!isPinned)}
+            style={{
+              background: isPinned ? '#4a9eff' : '#333',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '6px',
+              cursor: 'pointer',
               color: '#fff',
               fontSize: '14px',
               width: '36px',
@@ -159,21 +168,21 @@ const Sidebar: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
-            }} 
+            }}
             title={isPinned ? 'Unpin' : 'Pin'}
           >
             📌
           </button>
-          
-          <button 
+
+          <button
             ref={settingsButtonRef}
-            onClick={() => setShowSettings(!showSettings)} 
-            style={{ 
-              background: showSettings ? '#4a9eff' : '#333', 
-              border: 'none', 
-              borderRadius: '4px', 
-              padding: '6px', 
-              cursor: 'pointer', 
+            onClick={() => setShowSettings(!showSettings)}
+            style={{
+              background: showSettings ? '#4a9eff' : '#333',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '6px',
+              cursor: 'pointer',
               color: '#fff',
               fontSize: '14px',
               width: '36px',
@@ -211,11 +220,11 @@ const Sidebar: React.FC = () => {
           +
         </button>
 
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+        <div style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px'}}>
           {data.bookmarks.map((bookmark) => (
-            <div 
-              key={bookmark.id} 
-              style={{ 
+            <div
+              key={bookmark.id}
+              style={{
                 position: 'relative',
                 width: '44px',
                 height: '44px',
@@ -226,7 +235,7 @@ const Sidebar: React.FC = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 transition: 'all 0.2s',
-              }} 
+              }}
               onClick={() => window.open(bookmark.url, '_blank')}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#2a2a2a';
@@ -238,20 +247,20 @@ const Sidebar: React.FC = () => {
               }}
               title={bookmark.title}
             >
-              {bookmark.favicon && <img src={bookmark.favicon} alt="" style={{ width: '22px', height: '22px' }} />}
-              <button 
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  deleteBookmark(bookmark.id); 
-                }} 
-                style={{ 
+              {bookmark.favicon && <img src={bookmark.favicon} alt="" style={{width: '22px', height: '22px'}}/>}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteBookmark(bookmark.id);
+                }}
+                style={{
                   position: 'absolute',
                   top: '-6px',
                   right: '-6px',
-                  background: '#ff6b6b', 
-                  border: 'none', 
-                  color: '#fff', 
-                  cursor: 'pointer', 
+                  background: '#ff6b6b',
+                  border: 'none',
+                  color: '#fff',
+                  cursor: 'pointer',
                   width: '18px',
                   height: '18px',
                   borderRadius: '50%',
@@ -274,7 +283,7 @@ const Sidebar: React.FC = () => {
             </div>
           ))}
           {data.bookmarks.length === 0 && (
-            <div style={{ textAlign: 'center', color: '#666', padding: '20px 0', fontSize: '11px', width: '100%' }}>
+            <div style={{textAlign: 'center', color: '#666', padding: '20px 0', fontSize: '11px', width: '100%'}}>
               No bookmarks
             </div>
           )}
@@ -282,7 +291,7 @@ const Sidebar: React.FC = () => {
       </div>
 
       {showAddModal && (
-        <div 
+        <div
           style={{
             position: 'fixed',
             left: data.settings.position === 'left' ? '70px' : 'auto',
@@ -297,9 +306,9 @@ const Sidebar: React.FC = () => {
             border: '1px solid #333'
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <h4 style={{ margin: 0, fontSize: '14px', color: '#fff' }}>Add Bookmark</h4>
-            <button 
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px'}}>
+            <h4 style={{margin: 0, fontSize: '14px', color: '#fff'}}>Add Bookmark</h4>
+            <button
               onClick={() => setShowAddModal(false)}
               style={{
                 background: 'transparent',
@@ -315,51 +324,51 @@ const Sidebar: React.FC = () => {
               ✕
             </button>
           </div>
-          <input 
-            type="text" 
-            placeholder="Title" 
-            value={newBookmark.title} 
-            onChange={(e) => setNewBookmark({ ...newBookmark, title: e.target.value })} 
-            style={{ 
-              width: '100%', 
-              padding: '10px', 
-              marginBottom: '10px', 
-              borderRadius: '4px', 
-              border: '1px solid #333', 
-              background: '#0a0a0a', 
-              color: '#fff', 
+          <input
+            type="text"
+            placeholder="Title"
+            value={newBookmark.title}
+            onChange={(e) => setNewBookmark({...newBookmark, title: e.target.value})}
+            style={{
+              width: '100%',
+              padding: '10px',
+              marginBottom: '10px',
+              borderRadius: '4px',
+              border: '1px solid #333',
+              background: '#0a0a0a',
+              color: '#fff',
               boxSizing: 'border-box',
               fontSize: '13px'
-            }} 
+            }}
           />
-          <input 
-            type="text" 
-            placeholder="URL" 
-            value={newBookmark.url} 
-            onChange={(e) => setNewBookmark({ ...newBookmark, url: e.target.value })} 
-            onKeyDown={(e) => e.key === 'Enter' && addBookmark()} 
-            style={{ 
-              width: '100%', 
-              padding: '10px', 
-              marginBottom: '12px', 
-              borderRadius: '4px', 
-              border: '1px solid #333', 
-              background: '#0a0a0a', 
-              color: '#fff', 
+          <input
+            type="text"
+            placeholder="URL"
+            value={newBookmark.url}
+            onChange={(e) => setNewBookmark({...newBookmark, url: e.target.value})}
+            onKeyDown={(e) => e.key === 'Enter' && addBookmark()}
+            style={{
+              width: '100%',
+              padding: '10px',
+              marginBottom: '12px',
+              borderRadius: '4px',
+              border: '1px solid #333',
+              background: '#0a0a0a',
+              color: '#fff',
               boxSizing: 'border-box',
               fontSize: '13px'
-            }} 
+            }}
           />
-          <button 
-            onClick={addBookmark} 
-            style={{ 
-              width: '100%', 
-              padding: '10px', 
-              borderRadius: '4px', 
-              border: 'none', 
-              background: '#4a9eff', 
-              color: '#fff', 
-              cursor: 'pointer', 
+          <button
+            onClick={addBookmark}
+            style={{
+              width: '100%',
+              padding: '10px',
+              borderRadius: '4px',
+              border: 'none',
+              background: '#4a9eff',
+              color: '#fff',
+              cursor: 'pointer',
               fontWeight: 'bold',
               fontSize: '13px'
             }}
@@ -370,7 +379,7 @@ const Sidebar: React.FC = () => {
       )}
 
       {showSettings && (
-        <div 
+        <div
           style={{
             position: 'fixed',
             left: data.settings.position === 'left' ? '70px' : 'auto',
@@ -385,9 +394,9 @@ const Sidebar: React.FC = () => {
             border: '1px solid #333'
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <h4 style={{ margin: 0, fontSize: '14px', color: '#fff' }}>Settings</h4>
-            <button 
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px'}}>
+            <h4 style={{margin: 0, fontSize: '14px', color: '#fff'}}>Settings</h4>
+            <button
               onClick={() => setShowSettings(false)}
               style={{
                 background: 'transparent',
@@ -403,19 +412,19 @@ const Sidebar: React.FC = () => {
               ✕
             </button>
           </div>
-          
-          <div style={{ marginBottom: '12px' }}>
-            <label style={{ fontSize: '13px', display: 'block', marginBottom: '6px', color: '#ccc' }}>Position</label>
-            <select 
-              value={data.settings.position} 
-              onChange={(e) => updateSettings({ position: e.target.value as 'left' | 'right' })} 
-              style={{ 
-                width: '100%', 
-                padding: '10px', 
-                borderRadius: '4px', 
-                border: '1px solid #333', 
-                background: '#0a0a0a', 
-                color: '#fff', 
+
+          <div style={{marginBottom: '12px'}}>
+            <label style={{fontSize: '13px', display: 'block', marginBottom: '6px', color: '#ccc'}}>Position</label>
+            <select
+              value={data.settings.position}
+              onChange={(e) => updateSettings({position: e.target.value as 'left' | 'right'})}
+              style={{
+                width: '100%',
+                padding: '10px',
+                borderRadius: '4px',
+                border: '1px solid #333',
+                background: '#0a0a0a',
+                color: '#fff',
                 fontSize: '13px',
                 cursor: 'pointer'
               }}
@@ -424,53 +433,53 @@ const Sidebar: React.FC = () => {
               <option value="right">Right</option>
             </select>
           </div>
-          
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#ccc' }}>
-              <input 
-                type="checkbox" 
-                checked={data.settings.autoHide} 
-                onChange={(e) => updateSettings({ autoHide: e.target.checked })} 
-                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+
+          <div style={{marginBottom: '16px'}}>
+            <label style={{fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#ccc'}}>
+              <input
+                type="checkbox"
+                checked={data.settings.autoHide}
+                onChange={(e) => updateSettings({autoHide: e.target.checked})}
+                style={{width: '16px', height: '16px', cursor: 'pointer'}}
               />
               Auto-hide sidebar
             </label>
           </div>
-          
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-            <button 
-              onClick={() => exportData(data)} 
-              style={{ 
+
+          <div style={{display: 'flex', gap: '8px', marginBottom: '8px'}}>
+            <button
+              onClick={() => exportData(data)}
+              style={{
                 flex: 1,
-                padding: '10px', 
-                borderRadius: '4px', 
-                border: 'none', 
-                background: '#4a9eff', 
-                color: '#fff', 
-                cursor: 'pointer', 
+                padding: '10px',
+                borderRadius: '4px',
+                border: 'none',
+                background: '#4a9eff',
+                color: '#fff',
+                cursor: 'pointer',
                 fontSize: '13px',
                 fontWeight: '500'
               }}
             >
               Export Data
             </button>
-            <button 
-              onClick={() => fileInputRef.current?.click()} 
-              style={{ 
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              style={{
                 flex: 1,
-                padding: '10px', 
-                borderRadius: '4px', 
-                border: '1px solid #333', 
-                background: '#0a0a0a', 
-                color: '#fff', 
-                cursor: 'pointer', 
+                padding: '10px',
+                borderRadius: '4px',
+                border: '1px solid #333',
+                background: '#0a0a0a',
+                color: '#fff',
+                cursor: 'pointer',
                 fontSize: '13px',
                 fontWeight: '500'
               }}
             >
               Import Data
             </button>
-            <input ref={fileInputRef} type="file" accept=".json" onChange={handleImport} style={{ display: 'none' }} />
+            <input ref={fileInputRef} type="file" accept=".json" onChange={handleImport} style={{display: 'none'}}/>
           </div>
         </div>
       )}
@@ -484,8 +493,8 @@ export default defineContentScript({
     const container = document.createElement('div');
     container.id = 'shark-eagle-sidebar-root';
     document.body.appendChild(container);
-    
+
     const root = createRoot(container);
-    root.render(<Sidebar />);
+    root.render(<Sidebar/>);
   },
 });

@@ -14,6 +14,7 @@ const Sidebar: React.FC = () => {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
+  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     loadData().then(setData);
@@ -24,18 +25,41 @@ const Sidebar: React.FC = () => {
       if (isPinned || !data.settings.autoHide) return;
       
       const triggerWidth = data.settings.triggerWidth;
+      const sidebarWidth = 60;
       const isLeft = data.settings.position === 'left';
       
-      if (isLeft) {
-        setIsVisible(e.clientX <= triggerWidth);
-      } else {
-        setIsVisible(e.clientX >= window.innerWidth - triggerWidth);
+      const isOverSidebar = isLeft 
+        ? e.clientX <= sidebarWidth 
+        : e.clientX >= window.innerWidth - sidebarWidth;
+      
+      const isNearEdge = isLeft 
+        ? e.clientX <= triggerWidth 
+        : e.clientX >= window.innerWidth - triggerWidth;
+      
+      if (isOverSidebar || isNearEdge) {
+        if (hideTimeoutRef.current) {
+          clearTimeout(hideTimeoutRef.current);
+          hideTimeoutRef.current = null;
+        }
+        setIsVisible(true);
+      } else if (isVisible) {
+        if (!hideTimeoutRef.current) {
+          hideTimeoutRef.current = setTimeout(() => {
+            setIsVisible(false);
+            hideTimeoutRef.current = null;
+          }, 500);
+        }
       }
     };
 
     document.addEventListener('mousemove', handleMouseMove);
-    return () => document.removeEventListener('mousemove', handleMouseMove);
-  }, [data.settings, isPinned]);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+      }
+    };
+  }, [data.settings, isPinned, isVisible]);
 
   const updateData = useCallback(async (newData: SidebarData) => {
     setData(newData);

@@ -6,11 +6,13 @@ import {exportData, generateId, importData, loadData, saveData} from '../utils/s
 const Sidebar: React.FC = () => {
   const [data, setData] = useState<SidebarData>(defaultData);
   const [isVisible, setIsVisible] = useState(false);
-  const [isPinned, setIsPinned] = useState(false);
+  const [isPinned, setIsPinned] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newBookmark, setNewBookmark] = useState({title: '', url: ''});
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; bookmarkId: string } | null>(null);
+  const [editBookmark, setEditBookmark] = useState({ title: '', url: '' });
+  const [newBookmark, setNewBookmark] = useState({ title: '', url: '' });
   const sidebarRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
@@ -20,6 +22,17 @@ const Sidebar: React.FC = () => {
   useEffect(() => {
     loadData().then(setData);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (contextMenu) {
+        setContextMenu(null);
+      }
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [contextMenu]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -91,6 +104,46 @@ const Sidebar: React.FC = () => {
       ...data,
       bookmarks: data.bookmarks.filter(b => b.id !== id),
     });
+    setContextMenu(null);
+  };
+
+  const updateBookmark = async () => {
+    if (!editingId || !editBookmark.title || !editBookmark.url) return;
+    
+    await updateData({
+      ...data,
+      bookmarks: data.bookmarks.map(b => 
+        b.id === editingId 
+          ? {
+              ...b,
+              title: editBookmark.title,
+              url: editBookmark.url.startsWith('http') ? editBookmark.url : `https://${editBookmark.url}`,
+              favicon: `https://www.google.com/s2/favicons?domain=${editBookmark.url}&sz=32`,
+            }
+          : b
+      ),
+    });
+    setEditingId(null);
+    setEditBookmark({ title: '', url: '' });
+    setContextMenu(null);
+  };
+
+  const handleContextMenu = (e: React.MouseEvent, bookmarkId: string) => {
+    e.preventDefault();
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      bookmarkId
+    });
+  };
+
+  const handleEditClick = (bookmarkId: string) => {
+    const bookmark = data.bookmarks.find(b => b.id === bookmarkId);
+    if (bookmark) {
+      setEditingId(bookmarkId);
+      setEditBookmark({ title: bookmark.title, url: bookmark.url });
+      setContextMenu(null);
+    }
   };
 
   const updateSettings = async (settings: Partial<SidebarSettings>) => {
@@ -192,6 +245,7 @@ const Sidebar: React.FC = () => {
                 transition: 'all 0.2s',
               }}
               onClick={() => window.open(bookmark.url, '_blank')}
+              onContextMenu={(e) => handleContextMenu(e, bookmark.id)}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#2a2a2a';
                 e.currentTarget.style.transform = 'scale(1.05)';
@@ -489,6 +543,167 @@ const Sidebar: React.FC = () => {
             </button>
             <input ref={fileInputRef} type="file" accept=".json" onChange={handleImport} style={{display: 'none'}}/>
           </div>
+        </div>
+      )}
+
+      {contextMenu && (
+        <div
+          style={{
+            position: 'fixed',
+            left: `${contextMenu.x}px`,
+            top: `${contextMenu.y}px`,
+            background: '#1a1a1a',
+            borderRadius: '6px',
+            padding: '4px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+            zIndex: 2147483649,
+            border: '1px solid #333',
+            minWidth: '120px'
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={() => handleEditClick(contextMenu.bookmarkId)}
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              background: 'transparent',
+              border: 'none',
+              color: '#fff',
+              cursor: 'pointer',
+              textAlign: 'left',
+              fontSize: '13px',
+              borderRadius: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#2a2a2a';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+            }}
+          >
+            ✏️ Edit
+          </button>
+          <button
+            onClick={() => deleteBookmark(contextMenu.bookmarkId)}
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              background: 'transparent',
+              border: 'none',
+              color: '#ff6b6b',
+              cursor: 'pointer',
+              textAlign: 'left',
+              fontSize: '13px',
+              borderRadius: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#2a2a2a';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+            }}
+          >
+            🗑️ Delete
+          </button>
+        </div>
+      )}
+
+      {editingId && (
+        <div
+          style={{
+            position: 'fixed',
+            left: data.settings.position === 'left' ? '70px' : 'auto',
+            right: data.settings.position === 'right' ? '70px' : 'auto',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: '#1a1a1a',
+            borderRadius: '8px',
+            padding: '16px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+            zIndex: 2147483648,
+            width: '280px',
+            border: '1px solid #333'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <h4 style={{ margin: 0, fontSize: '14px', color: '#fff' }}>Edit Bookmark</h4>
+            <button
+              onClick={() => {
+                setEditingId(null);
+                setEditBookmark({ title: '', url: '' });
+              }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#999',
+                cursor: 'pointer',
+                fontSize: '18px',
+                padding: '0',
+                width: '24px',
+                height: '24px'
+              }}
+            >
+              ✕
+            </button>
+          </div>
+          <input
+            type="text"
+            placeholder="Title"
+            value={editBookmark.title}
+            onChange={(e) => setEditBookmark({ ...editBookmark, title: e.target.value })}
+            style={{
+              width: '100%',
+              padding: '10px',
+              marginBottom: '10px',
+              borderRadius: '4px',
+              border: '1px solid #333',
+              background: '#0a0a0a',
+              color: '#fff',
+              boxSizing: 'border-box',
+              fontSize: '13px'
+            }}
+          />
+          <input
+            type="text"
+            placeholder="URL"
+            value={editBookmark.url}
+            onChange={(e) => setEditBookmark({ ...editBookmark, url: e.target.value })}
+            onKeyDown={(e) => e.key === 'Enter' && updateBookmark()}
+            style={{
+              width: '100%',
+              padding: '10px',
+              marginBottom: '12px',
+              borderRadius: '4px',
+              border: '1px solid #333',
+              background: '#0a0a0a',
+              color: '#fff',
+              boxSizing: 'border-box',
+              fontSize: '13px'
+            }}
+          />
+          <button
+            onClick={updateBookmark}
+            style={{
+              width: '100%',
+              padding: '10px',
+              borderRadius: '4px',
+              border: 'none',
+              background: '#4a9eff',
+              color: '#fff',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '13px'
+            }}
+          >
+            Save Changes
+          </button>
         </div>
       )}
     </>

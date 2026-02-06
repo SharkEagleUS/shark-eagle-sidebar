@@ -257,38 +257,6 @@ const Sidebar: React.FC = () => {
               title={bookmark.title}
             >
               {bookmark.favicon && <img src={bookmark.favicon} alt="" style={{width: '22px', height: '22px'}}/>}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteBookmark(bookmark.id);
-                }}
-                style={{
-                  position: 'absolute',
-                  top: '-6px',
-                  right: '-6px',
-                  background: '#ff6b6b',
-                  border: 'none',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  width: '18px',
-                  height: '18px',
-                  borderRadius: '50%',
-                  fontSize: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  opacity: 0,
-                  transition: 'opacity 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.opacity = '1';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.opacity = '0';
-                }}
-              >
-                ✕
-              </button>
             </div>
           ))}
           {data.bookmarks.length === 0 && (

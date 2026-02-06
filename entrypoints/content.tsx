@@ -173,54 +173,9 @@ const Sidebar: React.FC = () => {
           >
             📌
           </button>
-
-          <button
-            ref={settingsButtonRef}
-            onClick={() => setShowSettings(!showSettings)}
-            style={{
-              background: showSettings ? '#4a9eff' : '#333',
-              border: 'none',
-              borderRadius: '4px',
-              padding: '6px',
-              cursor: 'pointer',
-              color: '#fff',
-              fontSize: '14px',
-              width: '36px',
-              height: '36px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            ⚙️
-          </button>
         </div>
 
-        <button
-          ref={addButtonRef}
-          onClick={() => setShowAddModal(!showAddModal)}
-          style={{
-            width: '44px',
-            height: '44px',
-            borderRadius: '50%',
-            border: 'none',
-            background: '#4a9eff',
-            color: '#fff',
-            cursor: 'pointer',
-            fontSize: '22px',
-            fontWeight: 'bold',
-            marginBottom: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(74, 158, 255, 0.3)'
-          }}
-          title="Add Bookmark"
-        >
-          +
-        </button>
-
-        <div style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px'}}>
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
           {data.bookmarks.map((bookmark) => (
             <div
               key={bookmark.id}
@@ -283,11 +238,60 @@ const Sidebar: React.FC = () => {
             </div>
           ))}
           {data.bookmarks.length === 0 && (
-            <div style={{textAlign: 'center', color: '#666', padding: '20px 0', fontSize: '11px', width: '100%'}}>
+            <div style={{ textAlign: 'center', color: '#666', padding: '20px 0', fontSize: '11px', width: '100%' }}>
               No bookmarks
             </div>
           )}
         </div>
+
+        <button
+          ref={addButtonRef}
+          onClick={() => setShowAddModal(!showAddModal)}
+          style={{
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            border: 'none',
+            background: '#4a9eff',
+            color: '#fff',
+            cursor: 'pointer',
+            fontSize: '22px',
+            fontWeight: 'bold',
+            marginTop: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(74, 158, 255, 0.3)',
+            flexShrink: 0
+          }}
+          title="Add Bookmark"
+        >
+          +
+        </button>
+
+        <button
+          ref={settingsButtonRef}
+          onClick={() => setShowSettings(!showSettings)}
+          style={{
+            background: showSettings ? '#4a9eff' : '#333',
+            border: 'none',
+            borderRadius: '4px',
+            padding: '6px',
+            cursor: 'pointer',
+            color: '#fff',
+            fontSize: '14px',
+            width: '36px',
+            height: '36px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: '8px',
+            flexShrink: 0
+          }}
+          title="Settings"
+        >
+          ⚙️
+        </button>
       </div>
 
       {showAddModal && (
@@ -296,7 +300,9 @@ const Sidebar: React.FC = () => {
             position: 'fixed',
             left: data.settings.position === 'left' ? '70px' : 'auto',
             right: data.settings.position === 'right' ? '70px' : 'auto',
-            top: addButtonRef.current ? `${addButtonRef.current.getBoundingClientRect().top}px` : '150px',
+            bottom: addButtonRef.current 
+              ? `${window.innerHeight - addButtonRef.current.getBoundingClientRect().top + 10}px` 
+              : 'auto',
             background: '#1a1a1a',
             borderRadius: '8px',
             padding: '16px',
@@ -384,7 +390,9 @@ const Sidebar: React.FC = () => {
             position: 'fixed',
             left: data.settings.position === 'left' ? '70px' : 'auto',
             right: data.settings.position === 'right' ? '70px' : 'auto',
-            top: settingsButtonRef.current ? `${settingsButtonRef.current.getBoundingClientRect().top}px` : '100px',
+            bottom: settingsButtonRef.current 
+              ? `${window.innerHeight - settingsButtonRef.current.getBoundingClientRect().top + 10}px` 
+              : 'auto',
             background: '#1a1a1a',
             borderRadius: '8px',
             padding: '16px',

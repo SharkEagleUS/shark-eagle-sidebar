@@ -33,7 +33,7 @@ pnpm install
 
 3. Start development server:
 ```bash
-pnpm run dev
+pnpm dev
 ```
 
 4. Load the extension in your browser:
@@ -51,12 +51,12 @@ pnpm run dev
 
 1. Build the extension:
 ```bash
-pnpm run build
+pnpm build
 ```
 
 2. Create a distributable zip file:
 ```bash
-pnpm run zip
+pnpm zip
 ```
 
 ## Usage

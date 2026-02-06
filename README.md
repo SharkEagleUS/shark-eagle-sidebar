@@ -121,22 +121,6 @@ Bookmarks are stored locally in your browser's storage using the Chrome Storage 
 }
 ```
 
-## Project Structure
-
-```
-shark-eagle-sidebar/
-├── entrypoints/
-│   ├── background.ts      # Background service worker
-│   └── content.tsx        # Main sidebar component
-├── utils/
-│   ├── types.ts          # TypeScript type definitions
-│   └── storage.ts        # Storage management utilities
-├── public/
-│   └── icon/             # Extension icons
-├── wxt.config.ts         # WXT configuration
-└── package.json          # Project dependencies
-```
-
 ## Technology Stack
 
 - **Framework**: [WXT](https://wxt.dev/) - Modern web extension framework
@@ -144,13 +128,6 @@ shark-eagle-sidebar/
 - **Build Tool**: Vite (via WXT)
 - **Styling**: Inline CSS-in-JS (no external CSS dependencies)
 - **Storage**: Chrome Storage API
-
-## Browser Compatibility
-
-- ✅ Chrome/Chromium (Manifest V3)
-- ✅ Edge (Manifest V3)
-- ✅ Firefox (Manifest V3)
-- ⚠️ Safari (Not tested)
 
 ## Development
 

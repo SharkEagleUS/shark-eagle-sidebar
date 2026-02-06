@@ -14,4 +14,7 @@ export default defineConfig({
       '128': 'icon/128.png',
     },
   },
+  webExt: {
+    startUrls: ['https://hzhou.me/2020/12/24/SaltyNote-Server-Setup/']
+  }
 });

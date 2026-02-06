@@ -22,18 +22,18 @@ A sleek, minimalist browser extension sidebar for managing your favorite bookmar
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/shark-eagle-sidebar.git
+git clone https://github.com/SharkEagleUS/shark-eagle-sidebar.git
 cd shark-eagle-sidebar
 ```
 
 2. Install dependencies:
 ```bash
-npm install
+pnpm install
 ```
 
 3. Start development server:
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 4. Load the extension in your browser:
@@ -51,12 +51,12 @@ npm run dev
 
 1. Build the extension:
 ```bash
-npm run build
+pnpm run build
 ```
 
 2. Create a distributable zip file:
 ```bash
-npm run zip
+pnpm run zip
 ```
 
 ## Usage
@@ -157,9 +157,9 @@ shark-eagle-sidebar/
 ### Available Scripts
 
 ```bash
-npm run dev      # Start development server with hot reload
-npm run build    # Build for production
-npm run zip      # Create distributable zip file
+pnpm dev      # Start development server with hot reload
+pnpm build    # Build for production
+pnpm zip      # Create distributable zip file
 ```
 
 ### Code Style

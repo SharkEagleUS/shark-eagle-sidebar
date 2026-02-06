@@ -20,7 +20,7 @@ export interface SidebarData {
 export const defaultSettings: SidebarSettings = {
   position: 'left',
   autoHide: true,
-  triggerWidth: 10,
+  triggerWidth: 3,
 };
 
 export const defaultData: SidebarData = {

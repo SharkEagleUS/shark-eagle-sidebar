@@ -14,6 +14,7 @@ const Sidebar: React.FC = () => {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
+  const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -165,6 +166,7 @@ const Sidebar: React.FC = () => {
           </button>
           
           <button 
+            ref={settingsButtonRef}
             onClick={() => setShowSettings(!showSettings)} 
             style={{ 
               background: showSettings ? '#4a9eff' : '#333', 
@@ -184,45 +186,6 @@ const Sidebar: React.FC = () => {
             ⚙️
           </button>
         </div>
-
-        {showSettings && (
-          <div style={{ 
-            background: '#1a1a1a', 
-            borderRadius: '8px', 
-            padding: '8px', 
-            marginBottom: '12px',
-            width: '200px',
-            position: 'absolute',
-            left: data.settings.position === 'left' ? '70px' : 'auto',
-            right: data.settings.position === 'right' ? '70px' : 'auto',
-            top: '100px',
-            zIndex: 10
-          }}>
-            <h4 style={{ margin: '0 0 8px 0', fontSize: '11px', color: '#888' }}>SETTINGS</h4>
-            <div style={{ marginBottom: '8px' }}>
-              <label style={{ fontSize: '11px', display: 'block', marginBottom: '4px' }}>Position</label>
-              <select value={data.settings.position} onChange={(e) => updateSettings({ position: e.target.value as 'left' | 'right' })} style={{ width: '100%', padding: '6px', borderRadius: '4px', border: 'none', background: '#333', color: '#fff', fontSize: '11px' }}>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
-            </div>
-            <div style={{ marginBottom: '8px' }}>
-              <label style={{ fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-                <input type="checkbox" checked={data.settings.autoHide} onChange={(e) => updateSettings({ autoHide: e.target.checked })} />
-                Auto-hide
-              </label>
-            </div>
-            <div style={{ display: 'flex', gap: '6px', flexDirection: 'column' }}>
-              <button onClick={() => exportData(data)} style={{ padding: '6px', borderRadius: '4px', border: 'none', background: '#4a9eff', color: '#fff', cursor: 'pointer', fontSize: '11px' }}>
-                Export
-              </button>
-              <button onClick={() => fileInputRef.current?.click()} style={{ padding: '6px', borderRadius: '4px', border: 'none', background: '#333', color: '#fff', cursor: 'pointer', fontSize: '11px' }}>
-                Import
-              </button>
-              <input ref={fileInputRef} type="file" accept=".json" onChange={handleImport} style={{ display: 'none' }} />
-            </div>
-          </div>
-        )}
 
         <button
           ref={addButtonRef}
@@ -403,6 +366,112 @@ const Sidebar: React.FC = () => {
           >
             Add Bookmark
           </button>
+        </div>
+      )}
+
+      {showSettings && (
+        <div 
+          style={{
+            position: 'fixed',
+            left: data.settings.position === 'left' ? '70px' : 'auto',
+            right: data.settings.position === 'right' ? '70px' : 'auto',
+            top: settingsButtonRef.current ? `${settingsButtonRef.current.getBoundingClientRect().top}px` : '100px',
+            background: '#1a1a1a',
+            borderRadius: '8px',
+            padding: '16px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+            zIndex: 2147483648,
+            width: '280px',
+            border: '1px solid #333'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <h4 style={{ margin: 0, fontSize: '14px', color: '#fff' }}>Settings</h4>
+            <button 
+              onClick={() => setShowSettings(false)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#999',
+                cursor: 'pointer',
+                fontSize: '18px',
+                padding: '0',
+                width: '24px',
+                height: '24px'
+              }}
+            >
+              ✕
+            </button>
+          </div>
+          
+          <div style={{ marginBottom: '12px' }}>
+            <label style={{ fontSize: '13px', display: 'block', marginBottom: '6px', color: '#ccc' }}>Position</label>
+            <select 
+              value={data.settings.position} 
+              onChange={(e) => updateSettings({ position: e.target.value as 'left' | 'right' })} 
+              style={{ 
+                width: '100%', 
+                padding: '10px', 
+                borderRadius: '4px', 
+                border: '1px solid #333', 
+                background: '#0a0a0a', 
+                color: '#fff', 
+                fontSize: '13px',
+                cursor: 'pointer'
+              }}
+            >
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+          
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#ccc' }}>
+              <input 
+                type="checkbox" 
+                checked={data.settings.autoHide} 
+                onChange={(e) => updateSettings({ autoHide: e.target.checked })} 
+                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+              />
+              Auto-hide sidebar
+            </label>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+            <button 
+              onClick={() => exportData(data)} 
+              style={{ 
+                flex: 1,
+                padding: '10px', 
+                borderRadius: '4px', 
+                border: 'none', 
+                background: '#4a9eff', 
+                color: '#fff', 
+                cursor: 'pointer', 
+                fontSize: '13px',
+                fontWeight: '500'
+              }}
+            >
+              Export Data
+            </button>
+            <button 
+              onClick={() => fileInputRef.current?.click()} 
+              style={{ 
+                flex: 1,
+                padding: '10px', 
+                borderRadius: '4px', 
+                border: '1px solid #333', 
+                background: '#0a0a0a', 
+                color: '#fff', 
+                cursor: 'pointer', 
+                fontSize: '13px',
+                fontWeight: '500'
+              }}
+            >
+              Import Data
+            </button>
+            <input ref={fileInputRef} type="file" accept=".json" onChange={handleImport} style={{ display: 'none' }} />
+          </div>
         </div>
       )}
     </>

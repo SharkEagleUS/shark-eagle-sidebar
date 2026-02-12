@@ -6,13 +6,14 @@ import {exportData, generateId, importData, loadData, saveData} from '../utils/s
 const Sidebar: React.FC = () => {
   const [data, setData] = useState<SidebarData>(defaultData);
   const [isVisible, setIsVisible] = useState(false);
-  const [isPinned, setIsPinned] = useState(true);
+  const [isKeyPressed, setIsKeyPressed] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; bookmarkId: string } | null>(null);
   const [editBookmark, setEditBookmark] = useState({ title: '', url: '' });
   const [newBookmark, setNewBookmark] = useState({ title: '', url: '' });
+  const [isRecordingKey, setIsRecordingKey] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
@@ -35,8 +36,32 @@ const Sidebar: React.FC = () => {
   }, [contextMenu]);
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === data.settings.toggleKey) {
+        setIsKeyPressed(true);
+        setIsVisible(true);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === data.settings.toggleKey) {
+        setIsKeyPressed(false);
+        setIsVisible(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [data.settings.toggleKey]);
+
+  useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (isPinned || !data.settings.autoHide) return;
+      if (isKeyPressed || !data.settings.autoHide) return;
 
       const triggerWidth = data.settings.triggerWidth;
       const sidebarWidth = 60;
@@ -61,7 +86,7 @@ const Sidebar: React.FC = () => {
           hideTimeoutRef.current = setTimeout(() => {
             setIsVisible(false);
             hideTimeoutRef.current = null;
-          }, 500);
+          }, 1000);
         }
       }
     };
@@ -73,7 +98,7 @@ const Sidebar: React.FC = () => {
         clearTimeout(hideTimeoutRef.current);
       }
     };
-  }, [data.settings, isPinned, isVisible]);
+  }, [data.settings, isKeyPressed, isVisible]);
 
   const updateData = useCallback(async (newData: SidebarData) => {
     setData(newData);
@@ -168,7 +193,7 @@ const Sidebar: React.FC = () => {
   const sidebarStyle: React.CSSProperties = {
     position: 'fixed',
     top: 0,
-    [data.settings.position]: isVisible || isPinned ? 0 : '-60px',
+    [data.settings.position]: isVisible ? 0 : '-60px',
     width: '60px',
     height: '100vh',
     backgroundColor: '#0a0a0a',
@@ -205,27 +230,6 @@ const Sidebar: React.FC = () => {
             <circle cx="42" cy="48" r="3" fill="#fff"/>
             <circle cx="58" cy="48" r="3" fill="#fff"/>
           </svg>
-
-          <button
-            onClick={() => setIsPinned(!isPinned)}
-            style={{
-              background: isPinned ? '#4a9eff' : '#333',
-              border: 'none',
-              borderRadius: '4px',
-              padding: '6px',
-              cursor: 'pointer',
-              color: '#fff',
-              fontSize: '14px',
-              width: '36px',
-              height: '36px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-            title={isPinned ? 'Unpin' : 'Pin'}
-          >
-            📌
-          </button>
         </div>
 
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
@@ -474,6 +478,34 @@ const Sidebar: React.FC = () => {
               />
               Auto-hide sidebar
             </label>
+          </div>
+
+          <div style={{marginBottom: '16px'}}>
+            <label style={{fontSize: '13px', display: 'block', marginBottom: '6px', color: '#ccc'}}>Toggle Key</label>
+            <button
+              onClick={() => setIsRecordingKey(true)}
+              onKeyDown={(e) => {
+                if (isRecordingKey) {
+                  e.preventDefault();
+                  updateSettings({ toggleKey: e.key });
+                  setIsRecordingKey(false);
+                }
+              }}
+              onBlur={() => setIsRecordingKey(false)}
+              style={{
+                width: '100%',
+                padding: '10px',
+                borderRadius: '4px',
+                border: isRecordingKey ? '1px solid #4a9eff' : '1px solid #333',
+                background: isRecordingKey ? '#1a1a2e' : '#0a0a0a',
+                color: isRecordingKey ? '#4a9eff' : '#fff',
+                fontSize: '13px',
+                cursor: 'pointer',
+                textAlign: 'center'
+              }}
+            >
+              {isRecordingKey ? 'Press any key...' : data.settings.toggleKey}
+            </button>
           </div>
 
           <div style={{display: 'flex', gap: '8px', marginBottom: '8px'}}>

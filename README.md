@@ -9,7 +9,7 @@ A sleek, minimalist browser extension sidebar for managing your favorite bookmar
 - **60px Compact Sidebar**: Ultra-slim design that doesn't interfere with your browsing
 - **Icon-Based Interface**: Visual bookmark management with favicon support
 - **Smart Auto-Hide**: Configurable auto-hide with 1-second delay when mouse leaves
-- **Pin/Unpin**: Keep the sidebar visible or let it auto-hide
+- **Toggle Key**: Hold a configurable key (default: Option/Alt) to show sidebar, release to hide
 - **Context Menu**: Right-click bookmarks to edit or delete
 - **Modal Popups**: Clean, centered modals for adding and editing bookmarks
 - **Position Control**: Place sidebar on left or right side of the screen
@@ -64,9 +64,9 @@ pnpm zip
 ### Basic Operations
 
 #### Accessing the Sidebar
-- **Auto-hide mode**: Move mouse to the left edge of the screen (or right if positioned there)
-- **Pinned mode**: Click the 📌 pin button to keep sidebar always visible
-- **Manual hide**: Sidebar will hide after 1 second when mouse leaves the sidebar area
+- **Toggle key**: Hold the Option/Alt key (configurable) to show the sidebar, release to hide
+- **Mouse hover**: Move mouse to the left edge of the screen (or right if positioned there)
+- **Auto-hide**: Sidebar will hide after 1 second when mouse leaves the sidebar area
 
 #### Adding Bookmarks
 1. Click the blue **"+"** button at the bottom of the sidebar
@@ -83,10 +83,12 @@ pnpm zip
 2. Configure:
    - **Position**: Left or Right side
    - **Auto-hide**: Toggle automatic hiding behavior
+   - **Toggle Key**: Click to record a new key for showing/hiding the sidebar
    - **Export Data**: Download bookmarks as JSON
    - **Import Data**: Restore bookmarks from JSON file
 
 ### Keyboard Shortcuts
+- **Option/Alt** (configurable): Hold to show sidebar, release to hide
 - **Enter**: Submit forms in Add/Edit modals
 - **Right-click**: Open context menu on bookmarks
 
@@ -96,6 +98,7 @@ The sidebar can be customized through the settings panel:
 
 - **Position**: `left` (default) or `right`
 - **Auto-hide**: `true` (default) or `false`
+- **Toggle Key**: `Alt` (default) - the key to hold for showing the sidebar
 - **Trigger Width**: 10px edge detection zone
 
 ## Data Storage
@@ -116,7 +119,8 @@ Bookmarks are stored locally in your browser's storage using the Chrome Storage 
   "settings": {
     "position": "left",
     "autoHide": true,
-    "triggerWidth": 10
+    "triggerWidth": 10,
+    "toggleKey": "Alt"
   }
 }
 ```

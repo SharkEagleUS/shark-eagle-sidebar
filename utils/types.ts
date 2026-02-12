@@ -10,6 +10,7 @@ export interface SidebarSettings {
   position: 'left' | 'right';
   autoHide: boolean;
   triggerWidth: number;
+  toggleKey: string;
 }
 
 export interface SidebarData {
@@ -20,7 +21,8 @@ export interface SidebarData {
 export const defaultSettings: SidebarSettings = {
   position: 'left',
   autoHide: true,
-  triggerWidth: 3,
+  triggerWidth: 10,
+  toggleKey: 'Alt',
 };
 
 export const defaultData: SidebarData = {
